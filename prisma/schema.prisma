@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  user_id String @db.VarChar(25) @id @default(cuid())
+  user_name String @db.VarChar(255)
+  email String 
+  createdAt  DateTime   @default(now())
+  posts Post[]
+  reactions Reaction[]
+  comments Comment[]
+}
+
+model Post{
+  post_id String @db.VarChar(25) @id @default(cuid())
+  post_title String 
+  post_content String
+  createdAt  DateTime   @default(now())
+  author User @relation(fields: [author_id] , references: [user_id])
+  author_id String @db.VarChar(25)
+  reactions Reaction[]
+  comments Comment[]
+  
+}
+
+model Reaction{
+   user User @relation(fields: [user_id] , references: [user_id])
+   user_id String @db.VarChar(25)
+   post Post @relation(fields: [post_id] , references: [post_id])
+   post_id String @db.VarChar(25)
+   is_like Boolean
+   createdAt  DateTime   @default(now())
+   @@id([post_id, user_id])
+}
+
+model Comment{
+  comment_id String @db.VarChar(25) @id @default(cuid())
+  content String 
+  user User @relation(fields: [user_id] , references: [user_id])
+  user_id String @db.VarChar(25)
+  post Post @relation(fields: [post_id] , references: [post_id])
+  post_id String @db.VarChar(25)
+  reply Comment? @relation( "replies" , fields: [reply_to] , references: [comment_id])
+  reply_to String? @db.VarChar(25)
+  replies Comment[] @relation("replies")
+  createdAt  DateTime   @default(now())
+}
