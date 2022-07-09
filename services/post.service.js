@@ -1,6 +1,3 @@
-const express = require('express');
-const router = express.Router();
-
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -8,34 +5,35 @@ const prisma = new PrismaClient();
 
 
 
-router.get('/' , async(req , res) => {
+exports.getPosts = async function (){
     try{
-       const posts = await prisma.post.findMany(
-        {
-            include : {
-                community :{
-                    select : {
-                        communityName : true,
-                    }
-                },
-                author : {
-                    select :{
-                        userName : true,
-                    }
-                }
-            }
-        }
-       );
-       res.json(posts);
-    }catch(err){
-        console.log(err);
-        res.status(500).json({'message' : 'something went wrong'});
-    }
-});
+        const posts = await prisma.post.findMany(
+         {
+             include : {
+                 community :{
+                     select : {
+                         communityName : true,
+                     }
+                 },
+                 author : {
+                     select :{
+                         userName : true,
+                     }
+                 }
+             }
+         }
+        );
+        return posts;
+     }catch(err){
+         console.log(err);
+         throw err;
+     }
 
+}
 
-router.get('/:id' , async(req , res) =>{
+exports.getPost = async function(postId){
     try{
+
         const post = await prisma.post.findUnique({
             where : {
                 postId : req.params.id,
@@ -69,49 +67,52 @@ router.get('/:id' , async(req , res) =>{
          });
             post.comments =  post.comments.filter((comment) => comment.replyTo === null);
          }
-        return res.json(post);
+        return post;
+        
     }catch(err){
         console.log(err);
-        return res.status(500).json({'message'  : 'something went wrong'});
+        throw err;
     }
-});
+}
 
-
-router.post('/' , async(req , res)  => {
+exports.createPost = async function(author , title , content , communityId = null){
 
     try{
-       const { author ,title , content , communityId = null} = req.body;
-       console.log(req.body);
-       console.log(title , content);
-       const newPost = await prisma.post.create({
-           data : {
-               postTitle : title,
-               postContent : content,
-               authorId : author,
-               communityId : communityId,
-           }
-       });
-       return res.json(newPost);
-
+        const newPost = await prisma.post.create({
+            data : {
+                postTitle : title,
+                postContent : content,
+                authorId : author,
+                communityId : communityId,
+            }
+        });
+        return newPost;
     }catch(err){
-       console.log(err);
-       res.status(500).json({'message' : 'something went wrong'});
-   }
-});
+        console.log(err);
+        throw err;
+    }
 
-router.delete('/:id' , async(req , res) =>{
+}
+
+exports.deletePost = async function(postId){
+
     try{
         const deletedPost = await prisma.post.delete({
             where : {
-                postId : req.params.id,
+                postId : postId,
             }
         });
-        return res.status(200).json({'message' : 'post deleted successfully'});  
-    }catch(e){
-        console.log(e);
-        return res.status(500).json({'message' : 'something went wrong'});
+        return deletedPost;
+    }catch(err){
+        console.log(err);
+        throw err;
     }
-});
+
+}
+
+exports.updatePost = async function (){
+
+}
 
 router.patch('/:id' , getPost ,async(req , res) =>{
 
@@ -165,42 +166,7 @@ router.patch('/:id' , getPost ,async(req , res) =>{
 
 
 
-router.post('/:postId/comments' , async(req , res) =>{
 
-    try{
-        const postId = req.params.postId;
-        const {content , userId , replyTo} = req.body;
-        const newComment = await prisma.comment.create({
-            data : {
-                content : content,
-                userId : userId,
-                postId : postId,
-                replyTo : replyTo,
-            }
-        });
-        return res.json(newComment);
-    }catch(err){
-         console.log(err);
-         return res.status(500).json({
-            'message' : 'Something went wrong !'
-         });
-    }
-});
-
-
-router.delete('/comments/:id' , async(req , res) =>{
-   try{
-      const deletedComment = await prisma.comment.delete({
-        where :{
-            commentId : req.params.id,
-        }
-      });
-      res.json({'message' : 'deleted successfully'});
-   }catch(err){
-      console.log(err);
-      res.status(500).json({'message' : 'something went wrong'});
-   }
-});
 
 
 
@@ -220,10 +186,3 @@ async function  getPost(req , res , next) {
         return res.status(500).json({'message' : 'something went wrong'})
     }
 }
-
-
-
-
-
-
-module.exports = router;

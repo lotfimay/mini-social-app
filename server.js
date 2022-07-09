@@ -17,14 +17,6 @@ app.use(bodyParser.urlencoded({
 
 app.use(cors());
 
-app.get('/' , async(req ,res) =>{
-    return res.json({
-        'data' : 'test',
-    })
-});
-
-
-
 
 
 app.use('/api/users' , usersRouter);

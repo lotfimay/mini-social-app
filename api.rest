@@ -1,9 +1,9 @@
-POST http://localhost:3001/api/users/
+PATCH   http://localhost:3001/api/posts/cl5d9hnqv0043ooupyqqg2fbk
 content-type: application/json
 
 {
-    "userName" : "lotfi_may",
-    "email" : "lotfimayouf09@gmail.com"
+    "title" : "Patch testing",
+    "content" : "Patch testing content"
 }
 
 
