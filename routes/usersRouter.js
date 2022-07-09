@@ -22,7 +22,7 @@ router.get('/:id' , async(req , res) =>{
     try{
         const user = await prisma.user.findUnique({
             where :{
-                user_id : req.params.id,
+                userId : req.params.id,
             }
         });
         return res.json(user);
@@ -34,10 +34,10 @@ router.get('/:id' , async(req , res) =>{
 
 router.post('/' , async(req , res) => {
     try{
-        const {user_name , email} = req.body;
+        const {userName , email} = req.body;
         const newUser = await prisma.user.create({
             data : {
-                user_name : user_name,
+                userName : userName,
                 email : email,
             }
         });

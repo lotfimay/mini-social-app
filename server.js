@@ -1,11 +1,9 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const  { PrismaClient } =  require('@prisma/client');
 const bodyParser = require('body-parser');
-const prisma = new PrismaClient();
-const usersRouter = require('./routers/usersRouter');
-const postsRouter = require('./routers/postsRouter');
+const usersRouter = require('./routes/usersRouter');
+const postsRouter = require('./routes/postsRouter');
 
 
 
@@ -34,6 +32,6 @@ app.use('/api/users' , usersRouter);
 app.use('/api/posts' , postsRouter);
 
 
-app.listen(PORT , () => {
+app.listen(PORT ,  () => {
     console.log(`Listening on port ${PORT}`);
 })

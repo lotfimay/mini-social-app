@@ -1,11 +1,9 @@
-POST http://localhost:3001/api/posts/comments
+POST http://localhost:3001/api/users/
 content-type: application/json
 
 {
-    "content": "Test 1.2.1",
-    "user_id": "cl5a1m4io00070sup8ujy80uo",
-    "post_id" : "cl5a2zjbp0004u4upf0byah84",
-    "reply_to" : "cl5b7cyhd0039ocups4dbwi4f"
+    "userName" : "lotfi_may",
+    "email" : "lotfimayouf09@gmail.com"
 }
 
 

@@ -10,47 +10,103 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Category{
+  categortId String @db.VarChar(25) @id @default(cuid())
+  categoryName String 
+  communities Community[]
+
+}
+
+model Community{
+  communityId String @db.VarChar(25) @id @default(cuid())
+  communityName String 
+  isPrivate Boolean
+  category Category @relation(fields: [categoryId] , references: [categortId])
+  categoryId String @db.VarChar(25)
+  creator User @relation(fields: [creatorId] , references: [userId])
+  creatorId String @db.VarChar(25)
+  joinedUsers CommunitiesUsers[]
+  posts Post[]
+
+}
+
+
 model User{
-  user_id String @db.VarChar(25) @id @default(cuid())
-  user_name String @db.VarChar(255)
+  userId String @db.VarChar(25) @id @default(cuid())
+  userName String @db.VarChar(255)
   email String 
   createdAt  DateTime   @default(now())
   posts Post[]
   reactions Reaction[]
   comments Comment[]
+  commentsReactions CommentReactions[]
+  createdCommuities Community[]
+  joinedCommunities CommunitiesUsers[]
+  followers Follows[] @relation("following")
+  following Follows[] @relation("follower")
+}
+
+model Follows{
+  follower User @relation("follower" , fields: [followerId] , references: [userId])
+  followerId String @db.VarChar(25)
+  following User @relation("following" , fields: [followingId] , references: [userId])
+  followingId String @db.VarChar(25)
+  followingAt DateTime @default(now())
+  @@id([followerId , followingId])
+}
+model CommunitiesUsers{
+    user User @relation(fields: [userId] , references: [userId])
+    userId String @db.VarChar(25)
+    community Community @relation(fields: [communityId] , references: [communityId])
+    communityId String @db.VarChar(25)
+    joinedAt DateTime @default(now())
+    @@id([userId , communityId])
 }
 
 model Post{
-  post_id String @db.VarChar(25) @id @default(cuid())
-  post_title String 
-  post_content String
+  postId String @db.VarChar(25) @id @default(cuid())
+  postTitle String 
+  postContent String
   createdAt  DateTime   @default(now())
-  author User @relation(fields: [author_id] , references: [user_id])
-  author_id String @db.VarChar(25)
+  author User @relation(fields: [authorId] , references: [userId])
+  authorId String @db.VarChar(25)
+  community Community? @relation(fields: [communityId] , references: [communityId])
+  communityId String? @db.VarChar(25)
   reactions Reaction[]
   comments Comment[]
   
 }
 
 model Reaction{
-   user User @relation(fields: [user_id] , references: [user_id])
-   user_id String @db.VarChar(25)
-   post Post @relation(fields: [post_id] , references: [post_id])
-   post_id String @db.VarChar(25)
-   is_like Boolean
+   user User @relation(fields: [userId] , references: [userId])
+   userId String @db.VarChar(25)
+   post Post @relation(fields: [postId] , references: [postId])
+   postId String @db.VarChar(25)
+   isLike Boolean
    createdAt  DateTime   @default(now())
-   @@id([post_id, user_id])
+   @@id([postId, userId])
 }
 
 model Comment{
-  comment_id String @db.VarChar(25) @id @default(cuid())
+  commentId String @db.VarChar(25) @id @default(cuid())
   content String 
-  user User @relation(fields: [user_id] , references: [user_id])
-  user_id String @db.VarChar(25)
-  post Post @relation(fields: [post_id] , references: [post_id])
-  post_id String @db.VarChar(25)
-  reply Comment? @relation( "replies" , fields: [reply_to] , references: [comment_id])
-  reply_to String? @db.VarChar(25)
+  user User @relation(fields: [userId] , references: [userId])
+  userId String @db.VarChar(25)
+  post Post @relation(fields: [postId] , references: [postId])
+  postId String @db.VarChar(25)
+  reply Comment? @relation( "replies" , fields: [replyTo] , references: [commentId])
+  replyTo String? @db.VarChar(25)
   replies Comment[] @relation("replies")
   createdAt  DateTime   @default(now())
+  reactions CommentReactions[]
+}
+
+model CommentReactions{
+    comment Comment @relation(fields: [commentId] , references: [commentId])
+    commentId String @db.VarChar(25)
+    user User @relation(fields: [userId] , references: [userId])
+    userId String @db.VarChar(25)
+    isLike Boolean
+    createdAt DateTime @default(now())
+    @@id([commentId , userId])
 }
