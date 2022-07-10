@@ -25,7 +25,7 @@ exports.getComment = async function(req , res , next){
 
 exports.createComment = async function(req , res , next){
     try{
-        const {postId , userId  , content , replyTo} = req.body;
+        const {postId , userId  , content , replyTo = null} = req.body;
         const newComment = await commentService.createComment(postId , userId , content , replyTo);
         return res.json(newComment);
         
@@ -62,6 +62,17 @@ exports.reactOnComment = async function(req , res , next){
        const {userId , isLike} = req.body;
        const newReaction = await commentService.reactOnComment(commentId , userId , isLike);
        return res.json(newReaction); 
+    }catch(err){
+        return res.status(500).json({'message' : 'something went wrong'});
+    }
+}
+
+exports.deleteCommentReaction = async function (req , res , next){
+    try{
+        const commentId = req.params.id;
+        const userId = req.params.userId;
+        const deletedCommentReaction = await commentService.deleteReaction(commentId , userId);
+        return res.json(deletedCommentReaction);
     }catch(err){
         return res.status(500).json({'message' : 'something went wrong'});
     }

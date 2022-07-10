@@ -35,7 +35,6 @@ exports.getPosts = async function (){
 
 exports.getPost = async function(postId){
     try{
-
         const post = await prisma.post.findUnique({
             where : {
                 postId : postId,
@@ -54,6 +53,7 @@ exports.getPost = async function(postId){
                 }
             },
         });
+        console.log('Test');
         if(post !== null && post.comments !== null) post.comments = helper.commentsFormatter(post.comments);
         return post;
         
@@ -175,5 +175,24 @@ exports.reactOnPost = async function(postId , userId , isLike){
         throw err;
     }
 
+
+}
+
+exports.deleteReaction = async function (postId , userId){
+
+    try{
+        const deletedReaction = await prisma.reaction.delete({
+            where : {
+                postId_userId : {
+                    postId : postId,
+                    userId : userId,
+                }
+            }
+        });
+        return deletedReaction;
+    }catch(err){
+        console.log(err);
+        throw err;
+    }
 
 }

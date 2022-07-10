@@ -63,3 +63,14 @@ exports.reactOnPost = async function(req , res , next){
         return res.status(500).json({'message' : 'something went wrong'});
     }
 }
+
+exports.deleteReaction = async function(req , res , next){
+    try{
+        const postId = req.params.id;
+        const userId = req.params.userId;
+        const deletedReaction = await postService.deleteReaction(postId , userId);
+        return res.json(deletedReaction);
+    }catch(err){
+        return res.status(500).json({'message' : 'something went wrong'});
+    }
+}

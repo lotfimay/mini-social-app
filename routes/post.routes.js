@@ -16,9 +16,7 @@ router.patch('/:id' ,postController.updatePost);
 
 router.post('/:id/react' , postController.reactOnPost);
 
-
-
-
+router.delete('/:id/react/:userId' , postController.deleteReaction);
 
 
 

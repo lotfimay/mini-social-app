@@ -16,5 +16,7 @@ router.patch('/:id' , commentControllers.updateComment);
 
 router.post('/:id/react' , commentControllers.reactOnComment);
 
+router.delete('/:id/react/:userId' , commentControllers.deleteCommentReaction);
+
 
 module.exports = router;

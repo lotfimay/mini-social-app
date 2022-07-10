@@ -106,3 +106,20 @@ exports.reactOnComment = async function(commentId , userId , isLike){
         throw err;
     }
 };
+
+exports.deleteReaction = async function(commentId , userId){
+    try{
+        const deletedCommentReaction = await prisma.commentReactions.delete({
+            where : {
+                commentId_userId:{
+                    commentId : commentId,
+                    userId : userId,
+                }
+            }
+        });
+        return deletedCommentReaction;
+    }catch(err){
+        console.log(err);
+        throw err;
+    }
+}
