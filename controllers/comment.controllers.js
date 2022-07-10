@@ -3,7 +3,7 @@ const commentService = require('../services/comment.service');
 
 exports.getComments = async function(req , res , next){
     try{
-        const {inculeReplies = false} = req.query;
+        const {inculeReplies = true} = req.query;
         const postId = req.params.postId;
         const comments = await commentService.getComments(postId , inculeReplies);
         return res.json(comments);        
@@ -15,9 +15,9 @@ exports.getComments = async function(req , res , next){
 exports.getComment = async function(req , res , next){
     try{
         const commentId = req.params.id;
-        const {inculeReplies = false} = req.query;
-        const comment = commentService.getComment(commentId , inculeReplies);
-        return comment;
+        const {inculeReplies = true} = req.query;
+        const comment = await commentService.getComment(commentId , inculeReplies);
+        return res.json(comment);
     }catch(err){
         return res.status(500).json({'message' : 'something went wrong'});
     }

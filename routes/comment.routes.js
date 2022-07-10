@@ -6,7 +6,7 @@ const commentControllers = require('../controllers/comment.controllers');
 
 router.get('/:postId' ,commentControllers.getComments);
 
-router.get('/:id' , commentControllers.getComment);
+router.get('/:postId/:id' , commentControllers.getComment);
 
 router.post('/' , commentControllers.createComment);
 

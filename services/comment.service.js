@@ -5,9 +5,9 @@ const helper = require('../helpers/index');
 
 
 exports.getComments = async function(postId , includeReplies){
-
+    
     try{
-      const comments = await prisma.comment.findMany({
+      let comments = await prisma.comment.findMany({
         where : {
             postId : postId,
         },
@@ -24,13 +24,17 @@ exports.getComments = async function(postId , includeReplies){
 exports.getComment = async function(commentId , includeReplies){
 
     try{
-        const comment = await prisma.comment.findUnique({
+        let comment = await prisma.comment.findUnique({
             where : {
                 commentId : commentId,
             },
         });
         if(comment && includeReplies){
-           comment =  helper.commentFormatter(comment , getComments(comment.postId , false));
+            const comments = await prisma.comment.findMany({
+                where : {
+                    postId : comment.postId,                }
+            });
+           comment =  helper.commentFormatter(comment , comments);
         }
         return comment;
     }catch(err){

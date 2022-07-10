@@ -53,7 +53,6 @@ exports.getPost = async function(postId){
                 }
             },
         });
-        console.log('Test');
         if(post !== null && post.comments !== null) post.comments = helper.commentsFormatter(post.comments);
         return post;
         

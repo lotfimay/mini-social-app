@@ -1,9 +1,7 @@
-POST    http://localhost:3001/api/comments/cl5et2uvg0027hcup4cry7bes/react
-content-type: application/json
+GET    http://localhost:3001/api/comments/cl5er2ct10001fouplewzmun8/
 
 {
-    "userId" : "cl5cl0xi10006b8upo5fa8aym",
-    "isLike" : true
+    "includeReplies" : true,
 }
 
 
