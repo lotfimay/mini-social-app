@@ -67,6 +67,8 @@ model Post{
   postId String @db.VarChar(25) @id @default(cuid())
   postTitle String 
   postContent String
+  likesNumber Int
+  disLikesNumber Int
   createdAt  DateTime   @default(now())
   author User @relation(fields: [authorId] , references: [userId])
   authorId String @db.VarChar(25)
@@ -90,6 +92,8 @@ model Reaction{
 model Comment{
   commentId String @db.VarChar(25) @id @default(cuid())
   content String 
+  likesNumber Int
+  disLikesNumber Int
   user User @relation(fields: [userId] , references: [userId])
   userId String @db.VarChar(25)
   post Post @relation(fields: [postId] , references: [postId])

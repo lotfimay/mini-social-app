@@ -1,6 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+const helper = require('../helpers/index');
+
 
 
 
@@ -36,7 +38,7 @@ exports.getPost = async function(postId){
 
         const post = await prisma.post.findUnique({
             where : {
-                postId : req.params.id,
+                postId : postId,
             },
             include : {
                 author : {
@@ -52,21 +54,7 @@ exports.getPost = async function(postId){
                 }
             },
         });
-        /*
-          later : try to reduce the complexity if it possible 
-        */
-         if(post !== null && post.comments !== null){
-            post.comments.forEach((comment) => {
-             let replies = [];
-             post.comments.forEach((reply) => {
-                 if(reply.replyTo === comment.commentId){
-                    replies.push(reply);
-                 }
-             });
-             comment.replies = replies;
-         });
-            post.comments =  post.comments.filter((comment) => comment.replyTo === null);
-         }
+        if(post !== null && post.comments !== null) post.comments = helper.commentsFormatter(post.comments);
         return post;
         
     }catch(err){
@@ -84,6 +72,8 @@ exports.createPost = async function(author , title , content , communityId = nul
                 postContent : content,
                 authorId : author,
                 communityId : communityId,
+                likesNumber : 0,
+                disLikesNumber : 0,
             }
         });
         return newPost;
@@ -110,79 +100,80 @@ exports.deletePost = async function(postId){
 
 }
 
-exports.updatePost = async function (){
-
-}
-
-router.patch('/:id' , getPost ,async(req , res) =>{
-
-      const {title , content} = req.body;
-      let flag1 = false  , flag2 = false;
-
-      title !== null ? flag1 = true : flag1 = false;
-      content !== null ? flag2 = true : flag2 = false;
-
-      
-      if(flag1 && flag2){
-        const updatedPost = await prisma.post.update({
-            data : {
-                postTitle : title,
-                postContent : content
-            },
-            where : {
-                postId : req.params.id,
-            }
-        });
-        return res.json(updatedPost)
-      }
-      else if(flag1){
-        const updatedPost = await prisma.post.update({
-            data :{
-                postTitle : title,
-            },
-            where : {
-                postId : req.params.id,
-            }
-        });
-        return res.json(updatedPost);
-      }
-      else if(flag2){
-         const updatedPost = await prisma.post.update({
-            data : {
-                postContent : content,
-            },
-            where : {
-                postId : req.params.id
-            }
-         });
-         return res.json(updatedPost);
-      }
-    
-      return res.status(500).json({
-        'message' : 'something went wrong'
-      });
-
-});
-
-
-
-
-
-
-
-async function  getPost(req , res , next) {
+exports.updatePost = async function (postId , title = null , content = null){
 
     try{
         const post = await prisma.post.findUnique({
             where : {
-                postId : req.params.id,
+                postId : postId,
             }
         });
         if(post == null) return res.status(404).json({'message' : 'post not found'});
-        res.post = post;
-        next();
+        let flag1 = false  , flag2 = false;
+
+        title !== null ? flag1 = true : flag1 = false;
+        content !== null ? flag2 = true : flag2 = false;
+
+      
+        if(flag1 && flag2){
+          const updatedPost = await prisma.post.update({
+              data : {
+                  postTitle : title,
+                  postContent : content
+              },
+              where : {
+                  postId : req.params.id,
+              }
+          });
+          return updatedPost;
+        }
+        else if(flag1){
+          const updatedPost = await prisma.post.update({
+              data :{
+                  postTitle : title,
+              },
+              where : {
+                  postId : req.params.id,
+              }
+          });
+          return updatedPost;
+        }
+        else if(flag2){
+           const updatedPost = await prisma.post.update({
+              data : {
+                  postContent : content,
+              },
+              where : {
+                  postId : req.params.id
+              }
+           });
+           return updatedPost
+        }
+        throw Error('Something went wrong !')
+    }catch(e){
+        console.log(e);
+        throw e;
+    }
+
+
+}
+
+exports.reactOnPost = async function(postId , userId , isLike){
+
+    try{
+        const newReaction = await prisma.reaction.create({
+            data : {
+                postId : postId,
+                userId : userId,
+                isLike : isLike,
+            }
+        });
+        return newReaction;
+
     }catch(err){
         console.log(err);
-        return res.status(500).json({'message' : 'something went wrong'})
+        throw err;
     }
+
+
 }

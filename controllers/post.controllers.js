@@ -40,3 +40,26 @@ exports.deletePost = async function(req , res , next){
         return res.status(500).json({'message' : 'something went wrong'});
     }
 }
+
+exports.updatePost = async function(req , res , next){
+    try{
+        const postId = req.params.id;
+        const {content = null , title = null} = req.body;
+        const updatedPost = await postService.updatePost(postId  , content , title);
+        return res.json(updatedPost);
+
+    }catch(err){
+        return res.status(500).json({'message' : 'something went wrong'});
+    }
+}
+
+exports.reactOnPost = async function(req , res , next){
+    try{
+        const postId = req.params.id;
+        const {userId , isLike} = req.body;
+        const newReaction = await postService.reactOnPost(postId , userId , isLike);
+        return res.json(newReaction);
+    }catch(err){
+        return res.status(500).json({'message' : 'something went wrong'});
+    }
+}

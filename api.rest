@@ -1,9 +1,9 @@
-PATCH   http://localhost:3001/api/posts/cl5d9hnqv0043ooupyqqg2fbk
+POST    http://localhost:3001/api/posts/cl5er2ct10001fouplewzmun8/react
 content-type: application/json
 
 {
-    "title" : "Patch testing",
-    "content" : "Patch testing content"
+    "userId" : "cl5cl0xi10006b8upo5fa8aym",
+    "isLike" : true
 }
 
 
